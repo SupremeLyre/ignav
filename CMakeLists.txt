@@ -7,7 +7,6 @@ FILE(GLOB SRC_FILES "src/ins-gnss/*.cc" "src/ins-gnss/rcv/*.cc")
 
 ADD_LIBRARY(navlib ${SRC_FILES})
 TARGET_LINK_LIBRARIES(navlib blas lapack z)
-target_compile_definitions(navlib PRIVATE DEBUG)
 
 SET_TARGET_PROPERTIES(navlib PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 
                       ${PROJECT_SOURCE_DIR}/lib)

@@ -352,7 +352,7 @@ extern double **dmat(int m, int n)
 extern int svd(const double *A, int m, int n, double *U, double *W, double *V)
 {
 #ifdef LAPACK
-    register int info = -1, lwork = -1, lda = m, ldu = m, ldvt = n, i, j;
+    int info = -1, lwork = -1, lda = m, ldu = m, ldvt = n, i, j;
     double *s, *u, *vt, *a;
     double wkopt;
     double *work;
@@ -397,7 +397,7 @@ extern int svd(const double *A, int m, int n, double *U, double *W, double *V)
     free(s);
     return 1;
 #else
-    register int i, j;
+    int i, j;
     double **a, **v, **u, *w;
 
     w = mat(1, MAX(m, n));
