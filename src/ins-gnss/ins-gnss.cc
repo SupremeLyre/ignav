@@ -490,8 +490,17 @@ static void getphi_euler(const insopt_t *opt, double dt, const double *Cbe, cons
 static void getPhi1(const insopt_t *opt, double dt, const double *Cbe, const double *pos, const double *omgb,
                     const double *fib, double *phi)
 {
-    int i, j, nx = xnX(opt);
-    double omega[3] = {0}, T[9], ge[3], re, rn[3], W[18] = {0}, WC[18] = {0}, Cbv[9];
+    double Cbe_[9] = {0}, fib_[3] = {0};
+    for (int i = 0; i < 9; i++)
+    {
+        Cbe_[i] = Cbe[i];
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        fib_[i] = fib[i];
+    }
+    int nx = xnX(opt);
+    double omega[3] = {0}, T[9], ge[3], re = 0.0, rn[3], W[18] = {0}, WC[18] = {0}, Cbv[9];
 
     trace(3, "getPhi1:\n");
 
@@ -510,52 +519,52 @@ static void getPhi1(const insopt_t *opt, double dt, const double *Cbe, const dou
     W[10] = omgb[2];
     W[14] = omgb[0];
     W[17] = omgb[1];
-    matmul("NN", 3, 6, 3, 1.0, Cbe, W, 0.0, WC);
-    for (i = IA; i < IA + NA; i++)
+    matmul("NN", 3, 6, 3, 1.0, Cbe_, W, 0.0, WC);
+    for (int i = IA; i < IA + NA; i++)
     {
-        for (j = IA; j < IA + NA; j++)
+        for (int j = IA; j < IA + NA; j++)
             phi[i + j * nx] -= Omge[i - IA + (j - IA) * 3] * dt;
-        for (j = ibg; j < ibg + nbg; j++)
-            phi[i + j * nx] = Cbe[i - IA + (j - ibg) * 3] * dt;
-        for (j = isg; j < isg + nsg; j++)
-            phi[i + j * nx] = Cbe[i - IA + (j - isg) * 3] * omgb[j - isg] * dt;
-        for (j = irg; j < irg + nrg; j++)
+        for (int j = ibg; j < ibg + nbg; j++)
+            phi[i + j * nx] = Cbe_[i - IA + (j - ibg) * 3] * dt;
+        for (int j = isg; j < isg + nsg; j++)
+            phi[i + j * nx] = Cbe_[i - IA + (j - isg) * 3] * omgb[j - isg] * dt;
+        for (int j = irg; j < irg + nrg; j++)
             phi[i + j * nx] = WC[i - IA + (j - irg) * 3] * dt;
     }
-    /* velocity transmit matrix */
-    matmul3("NN", Cbe, fib, omega);
-    skewsym3(omega, T);
     ecef2pos(pos, rn);
     pregrav(pos, ge);
     re = georadi(rn);
+    /* velocity transmit matrix */
+    matmul3("NN", Cbe_, fib_, omega);
+    /* TODO: bug occured !*/
+    skewsym3(omega, T);
 
-    W[0] = fib[1];
-    W[3] = fib[2];
-    W[7] = fib[0];
-    W[10] = fib[2];
-    W[14] = fib[0];
-    W[17] = fib[1];
-    matmul("NN", 3, 6, 3, 1.0, Cbe, W, 0.0, WC);
-
-    for (i = IV; i < IV + NV; i++)
+    W[0] = fib_[1];
+    W[3] = fib_[2];
+    W[7] = fib_[0];
+    W[10] = fib_[2];
+    W[14] = fib_[0];
+    W[17] = fib_[1];
+    matmul("NN", 3, 6, 3, 1.0, Cbe_, W, 0.0, WC);
+    for (int i = IV; i < IV + NV; i++)
     {
-        for (j = IV; j < IV + NV; j++)
+        for (int j = IV; j < IV + NV; j++)
             phi[i + j * nx] -= 2.0 * Omge[i - IV + (j - IV) * 3] * dt;
-        for (j = IA; j < IA + NA; j++)
+        for (int j = IA; j < IA + NA; j++)
             phi[i + j * nx] = -T[i - IV + (j - IA) * 3] * dt;
-        for (j = IP; j < IP + NP; j++)
+        for (int j = IP; j < IP + NP; j++)
             phi[i + j * nx] = -2.0 * dt / (re * norm(pos, 3)) * ge[i - IV] * pos[j - IP];
-        for (j = iba; j < iba + nba; j++)
-            phi[i + j * nx] = Cbe[i - IV + (j - iba) * 3] * dt;
-        for (j = isa; j < isa + nsa; j++)
-            phi[i + j * nx] = Cbe[i - IV + (j - isa) * 3] * fib[j - isa] * dt;
-        for (j = ira; j < ira + nra; j++)
+        for (int j = iba; j < iba + nba; j++)
+            phi[i + j * nx] = Cbe_[i - IV + (j - iba) * 3] * dt;
+        for (int j = isa; j < isa + nsa; j++)
+            phi[i + j * nx] = Cbe_[i - IV + (j - isa) * 3] * fib_[j - isa] * dt;
+        for (int j = ira; j < ira + nra; j++)
             phi[i + j * nx] = WC[i - IV + (j - ira) * 3] * dt;
     }
     /* position transmit matrix */
-    for (i = IP; i < IP + NP; i++)
+    for (int i = IP; i < IP + NP; i++)
     {
-        for (j = IV; j < IV + NV; j++)
+        for (int j = IV; j < IV + NV; j++)
             phi[i + j * nx] = (i - IP) == (j - IV) ? dt : 0.0;
     }
     /* propagate matrix for stochastic parameters */
@@ -1329,8 +1338,10 @@ static void updstat(const insopt_t *opt, insstate_t *ins, const double dt, const
 
     /* determine transition matrix
      * using last epoch ins states (first-order approx) */
-    opt->exphi ? precPhi(opt, dt, ins->Cbe, ins->re, ins->omgb, ins->fb, phi)
-               : getPhi1(opt, dt, ins->Cbe, ins->re, ins->omgb, ins->fb, phi);
+    if (opt->exphi)
+        precPhi(opt, dt, ins->Cbe, ins->re, ins->omgb, ins->fb, phi);
+    else
+        getPhi1(opt, dt, ins->Cbe, ins->re, ins->omgb, ins->fb, phi);
 
 #if UPD_IN_EULER
     getphi_euler(opt, dt, ins->Cbe, ins->re, ins->omgb, ins->fb, phi);

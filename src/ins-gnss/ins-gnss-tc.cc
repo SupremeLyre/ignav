@@ -32,7 +32,7 @@ static void sol2vel(const sol_t *sol1, const sol_t *sol2, double *v)
     v[2] = (sol1->rr[2] - sol2->rr[2]) / timediff(sol1->time, sol2->time);
 }
 /* check ins states covariance matrix----------------------------------------*/
-static int chkpcov(int nx, const insopt_t *opt, double *P)
+static void chkpcov(int nx, const insopt_t *opt, double *P)
 {
     int i;
     double var = 0.0;

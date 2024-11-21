@@ -155,6 +155,7 @@ extern int xnB(const insopt_t *opt)
 }
 extern int xnRx(const insopt_t *opt)
 {
+    // number of Pos Vel Att Ba Bg Dtr Sg Sa Rg Ra La Os Ol Oa Cm Vm Rc Rr iono trop pr dopp
     return (xnP(opt) + xnV(opt) + xnA(opt) + xnBa(opt) + xnBg(opt) + xnDt(opt) + xnSg(opt) + xnSa(opt) + xnRg(opt) +
             xnRa(opt) + xnLa(opt) + xnOs(opt) + xnOl(opt) + xnOa(opt) + xnCm(opt) + xnVm(opt) + xnRc(opt) + xnRr(opt) +
             xnI(opt) + xnT(opt) + xnL(opt) + xnD(opt));

@@ -3893,6 +3893,8 @@ extern void uniqnav(nav_t *nav)
             nav->lam[i][j] = satwavelen(i + 1, j, nav);
         }
     /* update carrier wavw length of extended obs codes */
+
+#if 0
     for (rcv = 0; rcv < 2; rcv++)
     {
         for (i = 0; i < MAXSAT; i++)
@@ -3909,6 +3911,7 @@ extern void uniqnav(nav_t *nav)
             }
         }
     }
+#endif
 }
 /* compare observation data -------------------------------------------------*/
 static int cmpobs(const void *p1, const void *p2)
