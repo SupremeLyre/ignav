@@ -523,7 +523,7 @@ static int startsvr(vt_t *vt)
     int i, ret, stropt[12] = {0};
 
     trace(3, "startsvr:\n");
-
+#if 0
     /* read start commands from command files */
     for (i = 0; i < 3; i++)
     {
@@ -548,6 +548,7 @@ static int startsvr(vt_t *vt)
         if (strtype[i] == STR_FILE && !confwrite(vt, strpath[i]))
             return 0;
     }
+#endif
     if (prcopt.refpos == 4)
     { /* rtcm */
         for (i = 0; i < 3; i++)
@@ -584,7 +585,7 @@ static int startsvr(vt_t *vt)
         readnavf(&svr.nav, filopt.navfile);
     }
     /* read navigation data file */
-    if (filopt.bdsfile)
+    if (filopt.bdsfile && 0)
     {
         readnavf(&svr.nav, filopt.bdsfile);
     }
@@ -609,12 +610,14 @@ static int startsvr(vt_t *vt)
     strsetdir(filopt.tempdir);
     strsetproxy(proxyaddr);
 
-    /* execute start command */
+/* execute start command */
+#if 0
     if (*startcmd && (ret = system(startcmd)))
     {
         trace(2, "command exec error: %s (%d)\n", startcmd, ret);
         vt_printf(vt, "command exec error: %s (%d)\n", startcmd, ret);
     }
+#endif
     /* virtual console */
     svr.vt = vt;
 
@@ -2168,6 +2171,7 @@ int main(int argc, char **argv)
     {
         rtkopenstat(STATFILE, outstat);
     }
+#if 0
     /* open ground truth monitor port */
     if (gtmoniport > 0 && !open_gtmoni(gtmoniport))
     {
@@ -2194,6 +2198,7 @@ int main(int argc, char **argv)
             return -1;
         }
     }
+#endif
 #if 0
     else {
         /* open device for local console */
@@ -2228,10 +2233,7 @@ int main(int argc, char **argv)
     vt_t *pvt = NULL;
 #endif
     /* start rtk server */
-    if (start)
-    {
-        startsvr(pvt);
-    }
+    startsvr(pvt);
     while (!intflg)
     {
         /* accept remote console connection */

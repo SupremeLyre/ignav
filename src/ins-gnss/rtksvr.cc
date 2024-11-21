@@ -134,6 +134,7 @@ static void writesol(rtksvr_t *svr, int index)
                         opt->mode >= PMODE_INS_UPDATE ? &svr->rtk.ins : NULL, &svr->rtk.opt.insopt, 0);
         }
         trace(3, "solution: %s", buff);
+        printf("%s\r", buff);
 
         strwrite(svr->stream + i + 7, buff, n);
 

@@ -1,3 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 build/
 lib/
+rtkrcv.nav
+navapp.rslt
+lc-fbsm
+lc-rts
+navapp

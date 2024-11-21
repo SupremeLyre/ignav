@@ -3,6 +3,8 @@
         "args": [
             "-o", 
             "../example/conf/navlib.conf", 
+            "-m", 
+            "52716"
         ]
     }
 }
