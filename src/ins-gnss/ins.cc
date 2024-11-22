@@ -815,6 +815,7 @@ extern int updateins(const insopt_t *insopt, insstate_t *ins, const imud_t *data
     quatmulx(qk_1, dqb, qtmp);
     quatmulx(dqe, qtmp, qk);
     normquat(qk);
+    /* TODO: error occurs! */
     quat2dcmx(qk, ins->Cbe);
 
     /* update velocity */
