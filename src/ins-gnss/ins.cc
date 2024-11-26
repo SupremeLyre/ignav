@@ -758,10 +758,10 @@ extern int updateins(const insopt_t *insopt, insstate_t *ins, const imud_t *data
     trace(5,"ins(+)=\n"); traceins(5,ins);
     return 1;
 #else
-    double dt, dqb[4], qk_1[4], Ck_1[9], qk[4], dqe[4], qtmp[4], da[3] = {0}, dv[3] = {0};
-    double domgb[3], domge[3], dvfk[3], dvbk[4], domg, dCe[9];
-    double wv[3], Omge[3], ge[3], vek_1[3];
-    int i;
+    double dt, dqb[4] = {0}, qk_1[4] = {0}, Ck_1[9] = {0}, qk[4] = {0}, dqe[4] = {0}, qtmp[4] = {0}, da[3] = {0}, dv[3] = {0};
+    double domgb[3] = {0}, domge[3] = {0}, dvfk[3] = {0}, dvbk[4] = {0}, domg, dCe[9] = {0};
+    double wv[3] = {0}, Omge[3] = {0}, ge[3] = {0}, vek_1[3] = {0};
+    int i = 0;
 
     trace(3, "updateins:\n");
 

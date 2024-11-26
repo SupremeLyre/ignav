@@ -1,8 +1,9 @@
 # ignav
 integrated navigation for ins and gnss
 # 更新日志
-- 状态转移矩阵更新时getPhi1()中的Cbe*fib有内存泄露问题，已初步解决，要先用数组把Cbe和fib存一下；
-- 部分函数书写不规范，声明为int类型在某些条件下未返回值，会导致在gcc>=12.x版本报错illegal instruction，gcc<=11.x版本Debug模式可用，但O3优化后有问题；
+- `updateins()`机械编排初始化时几种形式的姿态没有初始化为0，会导致在开启优化模式时值为nan，无法进行姿态更新。
+- 状态转移矩阵更新时`getPhi1()`中的Cbe*fib有内存泄露问题，已初步解决，要先用数组把Cbe和fib存一下；
+- 函数`readnavf()`和`chkpconv()`书写不规范，声明为int类型在某些条件下未返回值，会导致在gcc>=12.x版本报错illegal instruction，gcc<=11.x版本Debug模式可用，但O3优化后有问题；
 - 去掉了virtual terminal，可以直接使用gdb打断点调试
 # 简介
 IGNAV基于RTKLIB开发的INS/GNSS组合导航算法库，采用C语言编写；IGNAV适用于车载场景，目前正进行INS/GNSS融合视觉信息、激光雷达的算法编写，后续会逐步更新。
