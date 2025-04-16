@@ -42,6 +42,7 @@
  *           2016/07/30  1.15 suppress output if std is over opt->maxsolstd
  *           2017/06/13  1.16 support output/input of velocity solution
  *-----------------------------------------------------------------------------*/
+#include <cstdio>
 #include <ctype.h>
 #include <navlib.h>
 
@@ -1912,9 +1913,9 @@ static int outins(unsigned char *buff, const sol_t *sol, const char *s, const so
         {
             p += sprintf(p, "%s%s%14.9f%s%14.9f", s, sep, pos[0] * R2D, sep, pos[1] * R2D);
         }
-        p += sprintf(p, "%s%10.4f%s%3d%s%3d%s%4d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f", sep,
-                     pos[2], sep, sol->stat, sep, sol->ista, sep, sol->ns, sep, SQRT(Qp[4]), sep, SQRT(Qp[0]), sep,
-                     SQRT(Qp[8]), sep, sqvar(Qp[1]), sep, sqvar(Qp[2]), sep, sqvar(Qp[5]), sep, sol->age, sep, 0.0);
+        p += sprintf(p, "%s%10.4f%s%3d%s%3d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f", sep, pos[2],
+                     sep, sol->stat, sep, sol->ns, sep, SQRT(Qp[4]), sep, SQRT(Qp[0]), sep, SQRT(Qp[8]), sep,
+                     sqvar(Qp[1]), sep, sqvar(Qp[2]), sep, sqvar(Qp[5]), sep, sol->age, sep, 0.0);
 
         if (opt->outvel)
         { /* output velocity */
@@ -1929,8 +1930,8 @@ static int outins(unsigned char *buff, const sol_t *sol, const char *s, const so
 
         p += sprintf(
             p,
-            "%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%4d%s%3d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f",
-            s, sep, sol->rr[0], sep, sol->rr[1], sep, sol->rr[2], sep, sol->stat, sep, sol->ista, sep, sol->ns, sep,
+            "%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%3d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f",
+            s, sep, sol->rr[0], sep, sol->rr[1], sep, sol->rr[2], sep, sol->stat, sep, sol->ns, sep,
             SQRT(Pp[0]), sep, SQRT(Pp[4]), sep, SQRT(Pp[8]), sep, sqvar(Pp[1]), sep, sqvar(Pp[2]), sep, sqvar(Pp[5]),
             sep, sol->age, sep, sol->ratio);
 
@@ -1943,9 +1944,9 @@ static int outins(unsigned char *buff, const sol_t *sol, const char *s, const so
     }
     if (opt->outatt)
     { /* output attitude */
-        p += sprintf(p, "%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf", sep, sol->att[0] * R2D, sep,
-                     sol->att[1] * R2D, sep, NORMANG(sol->att[2] * R2D), sep, SQRT(sol->qa[0]) * R2D, sep,
-                     SQRT(sol->qa[1]) * R2D, sep, SQRT(sol->qa[2]) * R2D);
+        p += sprintf(p, "%s%4d%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf%s%10.4lf", sep, sol->ista, sep,
+                     sol->att[0] * R2D, sep, sol->att[1] * R2D, sep, NORMANG(sol->att[2] * R2D), sep,
+                     SQRT(sol->qa[0]) * R2D, sep, SQRT(sol->qa[1]) * R2D, sep, SQRT(sol->qa[2]) * R2D);
     }
     if (opt->outvb)
     {
@@ -2046,9 +2047,9 @@ static int outpos(unsigned char *buff, const char *s, const sol_t *sol, const so
     {
         p += sprintf(p, "%s%s%14.9f%s%14.9f", s, sep, pos[0] * R2D, sep, pos[1] * R2D);
     }
-    p += sprintf(p, "%s%10.4f%s%3d%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f", sep, pos[2], sep,
-                 sol->stat, sep, 0, sep, sol->ns, sep, SQRT(Q[4]), sep, SQRT(Q[0]), sep, SQRT(Q[8]), sep, sqvar(Q[1]),
-                 sep, sqvar(Q[2]), sep, sqvar(Q[5]), sep, sol->age, sep, sol->ratio);
+    p += sprintf(p, "%s%10.4f%s%3d%s%3d%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%8.4f%s%6.2f%s%6.1f", sep, pos[2], sep,
+                 sol->stat, sep, sol->ns, sep, SQRT(Q[4]), sep, SQRT(Q[0]), sep, SQRT(Q[8]), sep, sqvar(Q[1]), sep,
+                 sqvar(Q[2]), sep, sqvar(Q[5]), sep, sol->age, sep, sol->ratio);
     if (opt->wlratio)
     {
         p += sprintf(p, "%s%6.1f", sep, sol->wlratio);
@@ -2570,27 +2571,30 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     { /* lat/lon/hgt */
         if (opt->degf)
         {
-            p += sprintf(p, "%16s%s%16s%s%10s%s%3s%s%4s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s",
-                         "latitude(d'\")", sep, "longitude(d'\")", sep, "height(m)", sep, "Q", sep, "Qins", sep, "ns",
-                         sep, "sdn(m)", sep, "sde(m)", sep, "sdu(m)", sep, "sdne(m)", sep, "sdeu(m)", sep, "sdue(m)",
-                         sep, "age(s)", sep, "ratio");
+            p +=
+                sprintf(p, "%16s%s%16s%s%10s%s%3s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s", "latitude(d'\")",
+                        sep, "longitude(d'\")", sep, "height(m)", sep, "Q", sep, "ns", sep, "sdn(m)", sep, "sde(m)",
+                        sep, "sdu(m)", sep, "sdne(m)", sep, "sdeu(m)", sep, "sdue(m)", sep, "age(s)", sep, "ratio");
         }
         else
         {
-            p += sprintf(p, "%14s%s%14s%s%10s%s%3s%s%4s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s",
-                         "latitude(deg)", sep, "longitude(deg)", sep, "height(m)", sep, "Q", sep, "Qins", sep, "ns",
-                         sep, "sdn(m)", sep, "sde(m)", sep, "sdu(m)", sep, "sdne(m)", sep, "sdeu(m)", sep, "sdun(m)",
-                         sep, "age(s)", sep, "ratio");
-        }
-        if (opt->wlratio)
-        {
-            p += sprintf(p, "%s%6s", sep, "wl-ratio");
+            p += sprintf(p, "%14s%s%14s%s%10s%s%3s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s", "latitude(deg)",
+                         sep, "longitude(deg)", sep, "height(m)", sep, "Q", sep, "ns", sep, "sdn(m)", sep, "sde(m)",
+                         sep, "sdu(m)", sep, "sdne(m)", sep, "sdeu(m)", sep, "sdun(m)", sep, "age(s)", sep, "ratio");
         }
         if (opt->outvel)
         {
             p += sprintf(p, "%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s", sep, "vn(m/s)", sep, "ve(m/s)",
                          sep, "vu(m/s)", sep, "sdvn", sep, "sdve", sep, "sdvu", sep, "sdvne", sep, "sdveu", sep,
                          "sdvun");
+        }
+        if (opt->wlratio)
+        {
+            p += sprintf(p, "%s%6s", sep, "wl-ratio");
+        }
+        if (opt->posf == SOLF_INS)
+        {
+            p += sprintf(p, "%s%4s", sep, "Qins");
         }
         if (opt->outatt && opt->posf == SOLF_INS)
         {
@@ -2636,18 +2640,22 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     }
     else if (opt->posf == SOLF_XYZ || (opt->posf == SOLF_INS && opt->ins_posf == SOLF_XYZ))
     { /* x/y/z-ecef */
-        p += sprintf(p, "%14s%s%14s%s%14s%s%3s%s%4s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s", "x-ecef(m)",
-                     sep, "y-ecef(m)", sep, "z-ecef(m)", sep, "Q", sep, "Qins", sep, "ns", sep, "sdx(m)", sep, "sdy(m)",
-                     sep, "sdz(m)", sep, "sdxy(m)", sep, "sdyz(m)", sep, "sdzx(m)", sep, "age(s)", sep, "ratio");
-        if (opt->wlratio)
-        {
-            p += sprintf(p, "%s%6s", sep, "wl-ratio");
-        }
+        p += sprintf(p, "%14s%s%14s%s%14s%s%3s%s%3s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%6s%s%6s", "x-ecef(m)", sep,
+                     "y-ecef(m)", sep, "z-ecef(m)", sep, "Q", sep, "ns", sep, "sdx(m)", sep, "sdy(m)", sep, "sdz(m)",
+                     sep, "sdxy(m)", sep, "sdyz(m)", sep, "sdzx(m)", sep, "age(s)", sep, "ratio");
         if (opt->outvel)
         {
             p += sprintf(p, "%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s%s%10s", sep, "vx(m/s)", sep, "vy(m/s)",
                          sep, "vz(m/s)", sep, "sdvx", sep, "sdvy", sep, "sdvz", sep, "sdvxy", sep, "sdvyz", sep,
                          "sdvzx");
+        }
+        if (opt->wlratio)
+        {
+            p += sprintf(p, "%s%6s", sep, "wl-ratio");
+        }
+        if (opt->posf == SOLF_INS)
+        {
+            p += sprintf(p, "%s%4s", sep, "Qins");
         }
         if (opt->outatt && opt->posf == SOLF_INS)
         {
@@ -2693,10 +2701,9 @@ extern int outsolheads(unsigned char *buff, const solopt_t *opt)
     }
     else if (opt->posf == SOLF_ENU)
     { /* e/n/u-baseline */
-        p += sprintf(p, "%14s%s%14s%s%14s%s%3s%s%4s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s", "e-baseline(m)", sep,
-                     "n-baseline(m)", sep, "u-baseline(m)", sep, "Q", sep, "Qins", sep, "ns", sep, "sde(m)", sep,
-                     "sdn(m)", sep, "sdu(m)", sep, "sden(m)", sep, "sdnu(m)", sep, "sdue(m)", sep, "age(s)", sep,
-                     "ratio");
+        p += sprintf(p, "%14s%s%14s%s%14s%s%3s%s%3s%s%8s%s%8s%s%8s%s%8s%s%8s%s%8s%s%6s%s%6s", "e-baseline(m)", sep,
+                     "n-baseline(m)", sep, "u-baseline(m)", sep, "Q", sep, "ns", sep, "sde(m)", sep, "sdn(m)", sep,
+                     "sdu(m)", sep, "sden(m)", sep, "sdnu(m)", sep, "sdue(m)", sep, "age(s)", sep, "ratio");
     }
     p += sprintf(p, "\n");
     return p - (char *)buff;

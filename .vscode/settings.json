@@ -3,7 +3,7 @@
         "args": [
             "-nc",
             "-o",
-            "../example/conf/navlib.conf"
+            "../example/conf/1.conf"
         ]
     }
 }
