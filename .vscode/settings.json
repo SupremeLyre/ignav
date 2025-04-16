@@ -1,7 +1,7 @@
 {
     "cmake.debugConfig": {
         "args": [
-            "-nc",
+            // "-nc",
             "-o",
             "../example/conf/navlib.conf"
         ]
