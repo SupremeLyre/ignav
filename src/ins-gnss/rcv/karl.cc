@@ -1,15 +1,16 @@
 /*----------------------------------------------------------------------------
-* karl.cc : read the Karlsruhe Dataset
-*
-* version : $Revision:$ $Date:$
-* history : 2017/03/30  1.0  new
-*----------------------------------------------------------------------------*/
+ * karl.cc : read the Karlsruhe Dataset
+ *
+ * version : $Revision:$ $Date:$
+ * history : 2017/03/30  1.0  new
+ *----------------------------------------------------------------------------*/
 #include <navlib.h>
 
 /* sync a newline------------------------------------------------------------*/
 static int syncnewline(unsigned char *buff, int nb)
 {
-    if (buff[nb-1]=='\n'||(buff[nb-2]=='\r'&&buff[nb-1]=='\n')) return 1;
+    if (buff[nb - 1] == '\n' || (buff[nb - 2] == '\r' && buff[nb - 1] == '\n'))
+        return 1;
     return 0;
 }
 /* input karlsruhe dataset format image--------------------------------------
