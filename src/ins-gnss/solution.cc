@@ -2001,8 +2001,8 @@ static int outecef(unsigned char *buff, const char *s, const sol_t *sol, const s
     if (sol->stat == SOLQ_NONE)
         return 0;
     p += sprintf(
-        p, "%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%4d%s%3d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f", s,
-        sep, sol->rr[0], sep, sol->rr[1], sep, sol->rr[2], sep, sol->stat, sep, 0, sep, sol->ns, sep, SQRT(sol->qr[0]),
+        p, "%s%s%14.4f%s%14.4f%s%14.4f%s%3d%s%3d%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%10.4f%s%6.2f%s%6.1f", s,
+        sep, sol->rr[0], sep, sol->rr[1], sep, sol->rr[2], sep, sol->stat, sep, sol->ns, sep, SQRT(sol->qr[0]),
         sep, SQRT(sol->qr[1]), sep, SQRT(sol->qr[2]), sep, sqvar(sol->qr[3]), sep, sqvar(sol->qr[4]), sep,
         sqvar(sol->qr[5]), sep, sol->age, sep, sol->ratio);
     if (opt->wlratio)

@@ -3,7 +3,7 @@
         "args": [
             "-nc",
             "-o",
-            "../example/conf/1.conf"
+            "../example/conf/TC_3.conf"
         ]
     }
 }
