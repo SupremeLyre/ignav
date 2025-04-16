@@ -1289,6 +1289,16 @@ static void outrslt(rtksvr_t *svr, gmea_t *gm, int tick, int index)
         ins->gstat = SOLQ_NONE;
     }
     writesol(svr, index); /* write solution */
+    char str[32];
+    time2str(svr->rtk.sol.time, str, 0);
+    double pos[3]{};
+    ecef2pos(svr->rtk.sol.rr, pos);
+    double venu[3]{};
+    ecef2enu(pos, svr->rtk.sol.rr + 3, venu);
+    printf("%s,%14.9f,%14.9f,%10.4f,%10.5f,%10.5f,%10.5f,%10.4f,%10.4f,%10.4f\r", str, pos[0] * R2D, pos[1] * R2D,
+           pos[2], venu[0], venu[1], venu[2], svr->rtk.sol.att[0] * R2D, svr->rtk.sol.att[1] * R2D,
+           NORMANG(svr->rtk.sol.att[2] * R2D));
+    fflush(stdout);
 }
 /* update time difference between input stream--------------------------------*/
 static void updatetimediff(rtksvr_t *svr)
