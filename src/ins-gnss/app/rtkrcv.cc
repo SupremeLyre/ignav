@@ -543,10 +543,13 @@ static int startsvr(vt_t *vt)
             cmds_periodic[i] = s2[i];
     }
     /* confirm overwrite */
-    for (i = 7; i < 14; i++)
+    if (vt != NULL)
     {
-        if (strtype[i] == STR_FILE && !confwrite(vt, strpath[i]))
-            return 0;
+        for (i = 7; i < 14; i++)
+        {
+            if (strtype[i] == STR_FILE && !confwrite(vt, strpath[i]))
+                return 0;
+        }
     }
     if (prcopt.refpos == 4)
     { /* rtcm */
@@ -573,18 +576,18 @@ static int startsvr(vt_t *vt)
         }
     }
     /* read dcb file */
-    if (filopt.dcb)
+    if (filopt.dcb[0])
     {
         strcpy(sta[0].name, sta_name);
         readdcb(filopt.dcb, &svr.nav, sta);
     }
     /* read navigation data file */
-    if (filopt.navfile)
+    if (filopt.navfile[0])
     {
         readnavf(&svr.nav, filopt.navfile);
     }
     /* read navigation data file */
-    if (filopt.bdsfile)
+    if (filopt.bdsfile[0])
     {
         readnavf(&svr.nav, filopt.bdsfile);
     }
@@ -608,7 +611,7 @@ static int startsvr(vt_t *vt)
     /* set ftp/http directory and proxy */
     strsetdir(filopt.tempdir);
     strsetproxy(proxyaddr);
-
+#ifdef RTKSHELLCMDS
     /* execute start command */
     if (*startcmd && (ret = system(startcmd)))
     {
@@ -617,7 +620,7 @@ static int startsvr(vt_t *vt)
     }
     /* virtual console */
     svr.vt = vt;
-
+#endif
     /* start rtk server */
     if (!rtksvrstart(&svr, svrcycle, buffsize, strtype, paths, strfmt, navmsgsel, cmds, cmds_periodic, ropts, nmeacycle,
                      nmeareq, npos, &prcopt, solopt, &moni, errmsg))
@@ -2110,7 +2113,9 @@ int main(int argc, char **argv)
     for (i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-s"))
-            start = 1;
+            start |= 1;
+        else if (!strcmp(argv[i], "-nc") && i + 1 < argc)
+            start |= 2;
         else if (!strcmp(argv[i], "-p") && i + 1 < argc)
             port = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-m") && i + 1 < argc)
@@ -2194,6 +2199,22 @@ int main(int argc, char **argv)
             return -1;
         }
     }
+#if OPENPLOT
+    /* real-time plot */
+    if (moniport)
+    {
+        if (moniport)
+        {
+            sprintf(parg, "./rtkplot_qt -p tcpcli://localhost:%d", moniport);
+            execcmd(parg);
+        }
+    }
+#endif
+    /* start rtk server */
+    if (start & 2)
+    {
+        startsvr(NULL);
+    }
     else
     {
         /* open device for local console */
@@ -2213,27 +2234,6 @@ int main(int argc, char **argv)
     signal(SIGUSR2, sigshut);
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
-#if OPENPLOT
-    /* real-time plot */
-    if (moniport)
-    {
-        if (moniport)
-        {
-            sprintf(parg, "./rtkplot_qt -p tcpcli://localhost:%d", moniport);
-            execcmd(parg);
-        }
-    }
-#endif
-#if DEBUG
-    vt_t *pvt = con[0]->vt;
-#else
-    vt_t *pvt = NULL;
-#endif
-    /* start rtk server */
-    if (start)
-    {
-        startsvr(pvt);
-    }
     while (!intflg)
     {
         /* accept remote console connection */
@@ -2241,8 +2241,7 @@ int main(int argc, char **argv)
         sleepms(100);
     }
     /* stop rtk server */
-    stopsvr(pvt);
-    rtksvrfree(&svr);
+    stopsvr(NULL);
 
     /* close consoles */
     for (i = 0; i < MAXCON; i++)
